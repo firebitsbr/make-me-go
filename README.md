@@ -1,5 +1,6 @@
 # make-me-go
-Use go generate to automatically create Go source to recreate a folder tree of assets.
+Use ```go generate``` to automatically create Go source to recreate a folder
+tree of assets.
 
 ## What does make-me-go do?
 
@@ -7,8 +8,9 @@ Imagine you have a Go executable and it depends on associated asset files
 like web templates, sample documents or default config files.
 
 Your usual options are:
+
 1. Include the assets files in a deployment zip/package.
-2. Write Go code that creates the asset files programmatically.
+1. Write Go code that creates the asset files programmatically.
 
 **Now you have a better option.**
 
