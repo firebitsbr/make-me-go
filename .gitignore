@@ -22,3 +22,7 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+# The binaries built for the example code.
+example/example
+example/example.exe
