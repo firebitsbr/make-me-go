@@ -58,13 +58,13 @@ go build -o example
 
 If you don't want one large generated Go source file holding all your assets
 (though this should not usually be a problem) then in your Go code that calls
-into this package (e.g. ```makeMeGo.Generate()``` in ```embed-assets.go```
+into this package (e.g. ```Generate()``` in ```embed-assets.go```
 within the ```example/embed``` folder) you can split this into multiple
 separate calls each targetting a different folder within the assets structure.
 
 You'll end up with multiple generated code files with a separate assets slice
 in each one and you'll need to recreate each one with a separate call to
-```makeMeGo.WriteAssets()```.
+the ```WriteAssets()``` function.
 
 ---
 
