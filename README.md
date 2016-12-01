@@ -52,9 +52,14 @@ go build -o example
 ./example
 ```
 
-*If you are using Windows change ```example``` above to ```example.exe```.*
+*If you are using Windows change ```example``` above to ```example.exe``` and remove
+the ```./``` prefix.*
 
 ## Generated source files.
+
+The source file name and collection name are standardised by replacing any
+embedded spaces with underscores, trimming, and then making lowercase for
+the source file name.
 
 If you don't want one large generated Go source file holding all your assets
 (though this should not usually be a problem) then in your Go code that calls
