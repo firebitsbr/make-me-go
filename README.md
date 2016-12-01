@@ -1,6 +1,5 @@
 # make-me-go
-Use ```go generate``` to automatically create Go source to recreate a folder
-tree of assets.
+Embed application or site assets directly into your Go executable.
 
 ## What does make-me-go do?
 
