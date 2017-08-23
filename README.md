@@ -70,6 +70,13 @@ You'll end up with multiple generated code files with a separate assets slice
 in each one and you'll need to recreate each one with a separate call to
 the ```WriteAssets()``` function.
 
+There is a collection of file extentions named ```UTF8Extentions```.
+Any files with one of those extentions has code generated using UTF8 directly
+in the source file (chunked and escaped), whereas other files will by generated as
+byte array entries. This should all be transparent, but if you have any issues
+with text files (".txt", ".md", ".markdown", ".html", ".css", ".js", ".go", ".rtf")
+you can clear down that collection and all files will be written as byte arrays.
+
 ---
 
 ### About those unit tests ...

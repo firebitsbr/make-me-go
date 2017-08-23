@@ -44,6 +44,9 @@ func Generate(assetsFolder, codeFolder, collectionName string) {
 		if info.IsDir() {
 			return err
 		}
+		if info.Name() == ".DS_Store" {
+			return err
+		}
 		content, err := ioutil.ReadFile(currentPath)
 		shortPath := path.Clean(currentPath[len(prefix)+1:])
 		matchingFiles[shortPath] = content
@@ -94,6 +97,7 @@ func Generate(assetsFolder, codeFolder, collectionName string) {
 			writeByteArrayAsGoCode(out, content)
 			out.WriteString("\n  },\n")
 		}
+		out.WriteString("\n")
 	}
 	out.WriteString("}\n")
 }
