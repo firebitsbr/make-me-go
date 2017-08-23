@@ -7,9 +7,20 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 )
+
+// UTF8Extentions ... All matching extentions (eg ".txt", ".html") will be written as UTF8 and not bytes.
+var UTF8Extentions = []string{
+	".txt",
+	".md",
+	".markdown",
+	".html",
+	".css",
+	".js",
+	".go",
+	".rtf",
+}
 
 // Generate scans the given 'assetsFolder' (recursively) and writes Go code into
 // the 'codeFolder' as a slice of Go byte arrays with the file and collection both
@@ -65,41 +76,24 @@ func Generate(assetsFolder, codeFolder, collectionName string) {
 
 	// Write out all the assets in this collection as byte arrays.
 	// Go always uses *nix path separators internally.
+	validExts := make(map[string]bool)
+	for _, v := range UTF8Extentions {
+		validExts[v] = true
+	}
 	out.WriteString("var " + collectionName + " = map[string][]byte {\n")
 	for _, filename := range idx {
 		content := matchingFiles[filename]
-		out.WriteString("  \"" + strings.Replace(filename, "\\", "/", -1) + "\": []byte{")
-		writeByteArrayAsGoCode(out, content)
-		out.WriteString("\n  },\n")
+		e := strings.ToLower(path.Ext(filename))
+		_, ok := validExts[e]
+		if ok {
+			out.WriteString("  \"" + strings.Replace(filename, "\\", "/", -1) + "\": []byte(")
+			writeByteArrayAsGoCodeUtf8(out, content)
+			out.WriteString("),\n")
+		} else {
+			out.WriteString("  \"" + strings.Replace(filename, "\\", "/", -1) + "\": []byte{")
+			writeByteArrayAsGoCode(out, content)
+			out.WriteString("\n  },\n")
+		}
 	}
 	out.WriteString("}\n")
-}
-
-// WriteAssets recreates the assets in the collection (from the generated
-// Go code) into the outputFolder, respecting the original structure.
-func WriteAssets(outputFolder string, collection map[string][]byte) error {
-	for filename, contents := range collection {
-		pathname := path.Join(outputFolder, filename)
-
-		// Ensure the full folder path exists then create the file inside it.
-		err := os.MkdirAll(path.Dir(pathname), os.ModePerm)
-		if err != nil {
-			return err
-		}
-		err = ioutil.WriteFile(pathname, contents, 0644)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// writeByteArrayAsGoCode writes the bytes as text numerics in chunks of 40.
-func writeByteArrayAsGoCode(out *os.File, content []byte) {
-	for i, c := range content {
-		if i%40 == 0 {
-			out.WriteString("\n    ")
-		}
-		out.WriteString(strconv.Itoa(int(c)) + ",")
-	}
 }
