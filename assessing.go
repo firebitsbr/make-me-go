@@ -14,12 +14,20 @@ import (
 var UTF8Extentions = []string{
 	".txt",
 	".md",
+	".csv",
 	".markdown",
 	".html",
 	".css",
+	".less",
+	".sass",
+	".stylus",
 	".js",
 	".go",
+	".sh",
+	".bat",
 	".rtf",
+	".xml",
+	".xhtml",
 }
 
 // Generate scans the given 'assetsFolder' (recursively) and writes Go code into
