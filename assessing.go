@@ -1,4 +1,4 @@
-package makeMeGo
+package makemego
 
 import (
 	"fmt"
@@ -32,14 +32,20 @@ var UTF8Extentions = []string{
 
 // Generate scans the given 'assetsFolder' (recursively) and writes Go code into
 // the 'codeFolder' as a slice of Go byte arrays with the file and collection both
-// named by the 'collectionName' parameter.
+// named by the 'collectionName' parameter in the 'packageName' package (eg 'main').
 // The 'codeFolder' path will be created if it does not already exist.
-// The collectionName and resultant Go filename will have spaces replaced with
-// underscores.
-func Generate(assetsFolder, codeFolder, collectionName string) {
-	fmt.Println("Generating", collectionName, "Go code.")
+// The names will have spaces replaced with underscores.
+func Generate(
+	assetsFolder,
+	codeFolder,
+	packageName,
+	collectionName,
+	hint string,
+) {
+	fmt.Println("Generating", packageName+"."+collectionName, "Go code.")
 
 	// Normalise the namings.
+	packageName = strings.TrimSpace(strings.Replace(packageName, " ", "_", -1))
 	collectionName = strings.TrimSpace(strings.Replace(collectionName, " ", "_", -1))
 	codeFilename := strings.ToLower(collectionName)
 
@@ -72,13 +78,13 @@ func Generate(assetsFolder, codeFolder, collectionName string) {
 	}
 	sort.Strings(idx)
 
-	// Create the dstination path (if not existing) and the output Go file.
+	// Create the destination path (if not existing) and the output Go file.
 	os.MkdirAll(codeFolder, os.ModePerm)
 	out, _ := os.Create(path.Join(codeFolder, codeFilename+".go"))
 	defer out.Close()
 
 	// Write a summary at the top of the Go file.
-	out.WriteString("package generated \n\n")
+	out.WriteString("package " + packageName + " \n\n")
 	out.WriteString("// " + collectionName + " ... Created via 'go generate' - manual edits will be lost.\n\n")
 	for _, idx := range idx {
 		out.WriteString("// Includes: " + idx + "\n")
@@ -91,6 +97,7 @@ func Generate(assetsFolder, codeFolder, collectionName string) {
 	for _, v := range UTF8Extentions {
 		validExts[v] = true
 	}
+	out.WriteString("// " + hint + "\n")
 	out.WriteString("var " + collectionName + " = map[string][]byte {\n")
 	for _, filename := range idx {
 		content := matchingFiles[filename]

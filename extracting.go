@@ -1,4 +1,4 @@
-package makeMeGo
+package makemego
 
 import (
 	"io/ioutil"
