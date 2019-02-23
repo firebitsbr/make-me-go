@@ -2,9 +2,9 @@
 
 Embed application or site assets directly into your Go executable.
 
-## What make-me-go does
+## How it helps
 
-Imagine you have a Go executable and it depends on associated asset files like web templates, sample documents or default config files.
+Imagine you have a Go executable and it depends on associated asset files like web templates, sample documents, or default config files.
 
 Your usual options are:
 
@@ -13,21 +13,25 @@ Your usual options are:
 
 **Now you have a better option.**
 
-Go includes the ```go generate``` *command*. You can add a ```generate``` *comment* to the top of your ```main.go``` file and when you issue a ```go generate``` *command* it will find that ```generate``` *comment* and run it. This is independent of the main build process and can function similar to grunt, gulp or equivalent but *using native Go code*.
+Go includes the ```go generate``` command. You can add a ```generate``` comment to the top of your ```main.go``` file and when you issue a ```go generate``` command it will find that ```generate``` comment and run it.
 
-What **make-me-go** does is provide a package you can call during this generate phase which will take a given assets folder and recursively gather all it's contents. It will then convert those assets into hard-coded Go source which will be built as part of your normal codebase. That Go source can be used to recreate the original assets without you having to include them with your executable.
+This is independent of the main build process and can function similar to *grunt*, *gulp*, or equivalent but *using native Go code*.
+
+What **make-me-go** does is provide a package you can call during this generate phase which will take a given assets folder and recursively gather all it's contents. It will convert those assets into hard-coded Go source which will be built as part of your normal codebase. That Go source can be used to *recreate the original assets without you having to include them* with your executable.
 
 ## It's easier than it sounds
 
 1. Drop all your assets into a folder structure.
 1. Add a ```generate``` comment to your ```main.go``` file.
-1. Add a package with a single file which is referred to by the step above and which pulls in the **make-me-go** package and calls it.
+1. Add a single file which is referred to by the step above and which pulls in the **make-me-go** package and calls it.
 1. Run ```go generate``` to create your asset's Go source code.
 1. Your own Go code can now fetch the asset as a byte array from the newly-created Go source code's slice (keyed by path) or you can ask **make-me-go** to recreate the whole lot, mirroring the original folder path, in one call.
 
-## There's an example that makes it clear
+## An example makes it clearer
 
-In your terminal/command prompt navigate into the ```example``` folder and run ```go generate```. The contents of the ```generated``` subfolder will be updated to reflect the contents of the ```assets``` folder. You can then build and run your executable and it will update the folder containing the ```recreated-assets```.
+* In your terminal/command prompt navigate into the ```example``` folder and run ```go generate```.
+* The contents of the ```generated``` subfolder will have been updated to contain code holding the ```assets```.
+* Build and run and it will update the folder containing the ```recreated-assets```.
 
 ``` sh
 cd example
@@ -38,7 +42,49 @@ go build -o example
 
 *If you are using Windows change ```example``` above to ```example.exe``` and remove the ```./``` prefix.*
 
-## Generated source files
+## Available methods and properties
+
+### Generate
+
+``` go
+func Generate(assetsFolder, codeFolder, packageName, collectionName, hint string)
+```
+
+Called during the ```go generate``` phase, this will roll up the ```assetsFolder``` contents into a Go source file in the ```codeFolder``` as a map called ```collectionName``` with a package name of ```packageName``` and a ```hint``` against it.
+
+The assets are scanned recursively and the relative path names are taken account of. Look at the entry for the ```sample.css``` file in the ```example``` code's ```generated/assets.go``` file.
+
+You can also specify a ```codeFolder``` of ```.``` and a ```packageName``` of ```main``` if you want the resulting code generated in your main package, but be careful about filename collisions based on the ```collectionName```.
+
+For example usage, check the ```main.go``` file in the ```example```.
+
+### WriteAssets
+
+``` go
+func WriteAssets(outputFolder string, collection map[string][]byte) error
+```
+
+This will *recreate the entire asset tree* given by the ```collection``` (which is available in your generated Go code file) into the ```outputFolder```, including generating any required subfolders as needed.
+
+### Your assets as a collection
+
+``` go
+var Assets = map[string][]byte{}
+```
+
+This will be named as per your specified ```packageName``` and ```collectionName``` when you generated your code file. Individual files can be accessed directly by the filename, which will include any relative subfolder name (with the path separator normalised to "/").
+
+This is ideal for example when generating code for your templates. You can use this map to extract a template definition without having to recreate your assets first.
+
+### List of file extentions to be treated as text
+
+``` go
+var UTF8Extentions = []string{}
+```
+
+This holds the list (for example ```.txt```, ```.md```, ```.go``` etc) of file extentions whose files should be written out as UTF8 text in your generated code. This is more compact and easier to read than the otherwise-generated byte arrays.
+
+## Notes on generated source files
 
 The source file name and collection name are standardised by replacing any embedded spaces with underscores, trimming, and then making lowercase for the source file name.
 
@@ -47,12 +93,6 @@ If you don't want one large generated Go source file holding all your assets (th
 You'll end up with multiple generated code files with a separate assets slice in each one and you'll need to recreate each one with a separate call to the ```WriteAssets()``` function.
 
 There is a collection of file extentions named ```UTF8Extentions```.
-Any files with one of those extentions has code generated using UTF8 directly in the source file (chunked and escaped), whereas other files will by generated as byte array entries. This should all be transparent, but if you have any issues with text files (".txt", ".md", ".markdown", ".html", ".css", ".js", ".go", ".rtf") you can clear down that collection and all files will be written as byte arrays.
+Any files with one of those extentions has code generated using UTF8 directly in the source file (chunked and escaped), whereas other files will be generated as byte array entries.
 
----
-
-### About those unit tests
-
-*There are no unit tests.*
-
-I needed this in a rush for a one-off bit of processing and didn't expect to be keeping it. However it proved so useful I'm sharing it anyway. In my real-world usage it works exactly as expected and I probably won't be revisiting it to add test coverage. Works for me. YMMV. Help yourself.
+This should all happen automatically, but if you have any issues with text files (for example ```.txt```, ```.md```, ```.go``` etc) you can clear down that collection and all files will be written as byte arrays instead.
