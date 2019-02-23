@@ -5,15 +5,16 @@ package generated
 // Includes: example.html
 // Includes: example.txt
 // Includes: image.png
-// Includes: styles/sample.css
+// Includes: styles\sample.css
 
+// Auto-generated assets code.
 var Assets = map[string][]byte {
   "example.html": []byte(
-      "<html>\n    <head>\n        <title>\n            Sample Webpage\n        </title>\n    </head>\n    <body>\n        <h1>\n            Samp" + 
-      "le Webpage\n        </h1>\n    </body>\n</html>"),
+      "<html>\n    <head>\n        <title>\n            Sample Webpage\n        </title>\n    </head>\n    <body>\n        <h1>\n        " + 
+      "    Sample Webpage\n        </h1>\n    </body>\n</html>"),
 
   "example.txt": []byte(
-      "This is a sample text file.\n"),
+      "This is a sample text file.\n"),
 
   "image.png": []byte{
     137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,10,0,0,0,12,8,6,0,0,0,91,107,44,160,0,0,24,38,105,67,67,
@@ -199,6 +200,6 @@ var Assets = map[string][]byte {
   },
 
   "styles/sample.css": []byte(
-      "body {\n    background: #eee;\n    color: #444;\n    font-size: 12pt;\n}"),
+      "body {\n    background: #eee;\n    color: #444;\n    font-size: 12pt;\n}"),
 
 }

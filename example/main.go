@@ -5,8 +5,8 @@ package main
 import (
 	"fmt"
 
-	makeMeGo "github.com/kcartlidge/make-me-go"
-	generated "github.com/kcartlidge/make-me-go/example/generated"
+	makemego "github.com/kcartlidge/make-me-go"
+	"github.com/kcartlidge/make-me-go/example/generated"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 
 	// This recreates the full initial assets folder structure inside
 	// the recreated-assets folder.
-	err := makeMeGo.WriteAssets("recreated-assets", generated.Assets)
+	err := makemego.WriteAssets("recreated-assets", generated.Assets)
 	if err != nil {
 		fmt.Println(err)
 	}
