@@ -12,11 +12,12 @@ const charsPerLine = 130
 
 // writeByteArrayAsGoCode writes the bytes as text numerics in chunks of 40.
 func writeByteArrayAsGoCode(out *os.File, content []byte) {
+	out.WriteString("\t")
 	for i, c := range content {
 		if i%bytesPerLine == 0 {
-			out.WriteString("\n    ")
+			out.WriteString("\n\t\t")
 		}
-		out.WriteString(strconv.Itoa(int(c)) + ",")
+		out.WriteString(strconv.Itoa(int(c)) + ", ")
 	}
 }
 
@@ -25,17 +26,17 @@ func writeByteArrayAsGoCodeUtf8(out *os.File, content []byte) {
 	out.WriteString("\n")
 
 	s := string(content[:])
-	ch := chop(s, charsPerLine)
-	mx := len(ch) - 1
-	for i, l := range ch {
-		l = strings.Replace(l, "\\", "\\\\", -1)
-		l = strings.Replace(l, "\n", "\\n", -1)
-		l = strings.Replace(l, "\"", "\\\"", -1)
+	utf8lines := chop(s, charsPerLine)
+	mx := len(utf8lines) - 1
+	for i, line := range utf8lines {
+		line = strings.Replace(line, "\\", "\\\\", -1)
+		line = strings.Replace(line, "\n", "\\n", -1)
+		line = strings.Replace(line, "\"", "\\\"", -1)
 
-		out.WriteString("      \"")
-		out.WriteString(l)
+		out.WriteString("\t\t\"")
+		out.WriteString(line)
 		if i < mx {
-			out.WriteString("\" + \n")
+			out.WriteString("\" + \n\t")
 		} else {
 			out.WriteString("\"")
 		}

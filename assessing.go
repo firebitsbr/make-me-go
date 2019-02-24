@@ -97,22 +97,24 @@ func Generate(
 	for _, v := range UTF8Extentions {
 		validExts[v] = true
 	}
-	out.WriteString("// " + hint + "\n")
-	out.WriteString("var " + collectionName + " = map[string][]byte {\n")
-	for _, filename := range idx {
+	out.WriteString("// " + collectionName + " ... " + hint + "\n")
+	out.WriteString("var " + collectionName + " = map[string][]byte{\n")
+	for i, filename := range idx {
+		if i > 0 {
+			out.WriteString("\n")
+		}
 		content := matchingFiles[filename]
 		e := strings.ToLower(path.Ext(filename))
 		_, ok := validExts[e]
 		if ok {
-			out.WriteString("  \"" + strings.Replace(filename, "\\", "/", -1) + "\": []byte(")
+			out.WriteString("\t\"" + strings.Replace(filename, "\\", "/", -1) + "\": []byte(")
 			writeByteArrayAsGoCodeUtf8(out, content)
 			out.WriteString("),\n")
 		} else {
-			out.WriteString("  \"" + strings.Replace(filename, "\\", "/", -1) + "\": []byte{")
+			out.WriteString("\t\"" + strings.Replace(filename, "\\", "/", -1) + "\": []byte{")
 			writeByteArrayAsGoCode(out, content)
-			out.WriteString("\n  },\n")
+			out.WriteString("\n\t},\n")
 		}
-		out.WriteString("\n")
 	}
 	out.WriteString("}\n")
 }
